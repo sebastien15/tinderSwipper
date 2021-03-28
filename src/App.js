@@ -1,27 +1,42 @@
-import logo from './logo.svg';
 import './App.css';
-import Button from '@material-ui/core/Button';
+import { Card, CardWrapper } from 'react-swipeable-cards';
+import {useState, useEffect} from 'react';
+import {Typography} from '@material-ui/core';
 
 function App() {
+  const startIndex =0;
+  const endIndex =10;
+  const[cards, setCards] = useState([]);
+  useEffect(()=>{
+    const getCards = async () => {
+      const cardsFromServer = await fetchCards();
+      setCards(cardsFromServer.slice([startIndex],[endIndex]))
+      return;
+    }
+    getCards();
+  })
+  const fetchCards = async ()=>{
+    try{
+      const res =  await fetch('https://jsonplaceholder.typicode.com/photos')
+      const data = await res.json()
+      return data
+    }catch(error){
+      console.log(error.message)
+    }
+  }
+  const onDoubleTap = (data)=>{
+    alert('liked')
+  }
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-        <Button variant="contained" color="primary">
-          Hello World
-        </Button>
-      </header>
+      <CardWrapper>
+        {cards.map((card) => (
+          <Card key={card.id} onDoubleTap={onDoubleTap}>
+            <Typography variant="h1">card.title}</Typography>
+            <img src={card.thumbnailUrl} alt=""/>
+          </Card>
+        ))}
+      </CardWrapper>
     </div>
   );
 }
